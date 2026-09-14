@@ -52,11 +52,13 @@ func NewEngine(cfg *config.Config) (*gin.Engine, error) {
 //
 // 中间件的顺序非常重要，执行关系可以理解为由外到内：
 //
-//  RequestID  最先注册，确保后续所有日志和响应都可以关联到同一个请求
-//  Recovery   放在所有可能触发 panic 的逻辑之前
+//		RequestID  最先注册，确保后续所有日志和响应都可以关联到同一个请求
+//	 Logger     尽量靠前，以便记录真实的响应状态码和请求耗时
+//		Recovery   放在所有可能触发 panic 的逻辑之前
 func registerGlobalMiddleware(engine *gin.Engine) error {
 	engine.Use(
 		middleware.RequestID(true),
+		//middleware.Logger(),
 		middleware.Recovery(),
 	)
 	return nil
