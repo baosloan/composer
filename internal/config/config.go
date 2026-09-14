@@ -22,6 +22,7 @@ type Config struct {
 	App    AppConfig    `mapstructure:"app"`
 	Server ServerConfig `mapstructure:"server"`
 	Log    LogConfig    `mapstructure:"log"`
+	CORS   CORSConfig   `mapstructure:"cors"`
 }
 
 // AppConfig 用于保存应用的身份标识信息。
@@ -101,4 +102,19 @@ type LogRotate struct {
 	MaxBackups int  `mapstructure:"max_backups"`  // 保留的旧日志文件最大数量
 	MaxAgeDays int  `mapstructure:"max_age_days"` // 旧日志文件保留的最大天数
 	Compress   bool `mapstructure:"compress"`     // 是否压缩旧的日志文件（gzip）
+}
+
+// CORSConfig 包含跨域资源共享（CORS）配置。
+//
+// 与硬编码的通配符不同，本配置支持按环境灵活调整：
+// release 模式下，当 AllowCredentials 为 true 时，会拒绝通配符来源（*），
+// 因为 CORS 规范明确禁止这种组合，浏览器也会拒绝此类请求。
+type CORSConfig struct {
+	Enabled          bool          `mapstructure:"enabled"`
+	AllowOrigins     []string      `mapstructure:"allow_origins"`
+	AllowMethods     []string      `mapstructure:"allow_methods"`
+	AllowHeaders     []string      `mapstructure:"allow_headers"`
+	ExposeHeaders    []string      `mapstructure:"expose_headers"`
+	AllowCredentials bool          `mapstructure:"allow_credentials"`
+	MaxAge           time.Duration `mapstructure:"max_age"`
 }

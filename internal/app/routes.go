@@ -61,6 +61,8 @@ func registerGlobalMiddleware(engine *gin.Engine) error {
 		//middleware.Logger(),
 		middleware.Recovery(),
 	)
+
+	//engine.Use(middleware.CORS())
 	return nil
 }
 
