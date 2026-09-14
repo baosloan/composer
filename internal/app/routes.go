@@ -36,11 +36,30 @@ func NewEngine(cfg *config.Config) (*gin.Engine, error) {
 		return nil, err
 	}
 
-	engine.Use(middleware.RequestID(true))
+	if err := registerGlobalMiddleware(engine); err != nil {
+		return nil, err
+	}
+	engine.NoRoute(middleware.NoRoute())
+	engine.NoMethod(middleware.NoMethod())
+
 	healthHandler := health.NewHandler("")
 	health.RegisterRoutes(engine, healthHandler)
 
 	return engine, nil
+}
+
+// registerGlobalMiddleware 注册应用于所有请求的全局中间件链。
+//
+// 中间件的顺序非常重要，执行关系可以理解为由外到内：
+//
+//  RequestID  最先注册，确保后续所有日志和响应都可以关联到同一个请求
+//  Recovery   放在所有可能触发 panic 的逻辑之前
+func registerGlobalMiddleware(engine *gin.Engine) error {
+	engine.Use(
+		middleware.RequestID(true),
+		middleware.Recovery(),
+	)
+	return nil
 }
 
 // ginMode 将应用的 server.mode 映射到 Gin 的运行模式。
