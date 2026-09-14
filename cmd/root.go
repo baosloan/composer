@@ -22,47 +22,46 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
+// 构建信息用包级 var，留给 -ldflags 在链接期注入
+var (
+	version   = "dev"
+	commit    = "none"
+	buildTime = "unknown"
+)
 
+// configPath 为 --config 参数，所有命令共用。
+var configPath string
 
-// rootCmd represents the base command when called without any subcommands
+// rootCmd 表示不带任何子命令时调用的根命令。
 var rootCmd = &cobra.Command{
 	Use:   "composer",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A Gin web service scaffold with single-node and cluster support",
+	Long: `composer is a layered Gin web service.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+Database, Redis and Kafka each support a single-node and a cluster topology,
+selected by the ` + "`mode`" + ` field in their config block. Configuration is
+validated at startup, so an incoherent topology fails immediately with a
+precise message rather than as a connection timeout later.`,
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// Execute 将所有子命令添加到根命令中，并适当地设置标志。
+// 该函数由 main.main() 调用，只需对 rootCmd 执行一次。
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.composer.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", "", "path to the config file (default: ./config/config.yaml)")
 }
-
-
