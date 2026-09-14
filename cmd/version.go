@@ -8,7 +8,7 @@ import (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print build information",
+	Short: "打印构建信息",
 	Run: func(*cobra.Command, []string) {
 		fmt.Printf("version:    %s\ncommit:     %s\nbuilt:      %s\n",
 			version, commit, buildTime)

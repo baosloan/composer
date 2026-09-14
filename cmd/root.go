@@ -63,5 +63,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", "", "path to the config file (default: ./config/config.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", "", "path to the config file (default: ./configs/config.yaml)")
 }
