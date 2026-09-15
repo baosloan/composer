@@ -19,10 +19,11 @@ const DefaultJWTSecret = "change-me-in-production"
 
 // Config 为根配置对象，包含所有子配置项。
 type Config struct {
-	App    AppConfig    `mapstructure:"app"`
-	Server ServerConfig `mapstructure:"server"`
-	Log    LogConfig    `mapstructure:"log"`
-	CORS   CORSConfig   `mapstructure:"cors"`
+	App       AppConfig       `mapstructure:"app"`
+	Server    ServerConfig    `mapstructure:"server"`
+	Log       LogConfig       `mapstructure:"log"`
+	CORS      CORSConfig      `mapstructure:"cors"`
+	RateLimit RateLimitConfig `mapstructure:"rate_limit"`
 }
 
 // AppConfig 用于保存应用的身份标识信息。
@@ -117,4 +118,15 @@ type CORSConfig struct {
 	ExposeHeaders    []string      `mapstructure:"expose_headers"`
 	AllowCredentials bool          `mapstructure:"allow_credentials"`
 	MaxAge           time.Duration `mapstructure:"max_age"`
+}
+
+// RateLimitConfig 包含令牌桶限流器的配置。
+type RateLimitConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+	// RPS 为每个客户端稳定的每秒请求数（持续速率），Burst 为瞬时突发容量。
+	// 客户端按 IP 进行区分。
+	RPS   float64 `mapstructure:"rps"`
+	Burst int     `mapstructure:"burst"`
+	// TTL 用于淘汰空闲的客户端令牌桶，防止内存无限增长。
+	TTL time.Duration `mapstructure:"ttl"`
 }

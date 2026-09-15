@@ -66,3 +66,11 @@ cors:
   expose_headers: [X-Request-ID]
   allow_credentials: false
   max_age: 12h
+
+rate_limit:
+  enabled: true
+  # 每个客户端 IP 的稳定每秒请求数（持续速率），以及瞬时突发容量。
+  rps: 50
+  burst: 100
+  # 用于淘汰空闲的客户端令牌桶，防止内存无限增长。
+  ttl: 10m
