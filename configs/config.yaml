@@ -74,3 +74,7 @@ rate_limit:
   burst: 100
   # 用于淘汰空闲的客户端令牌桶，防止内存无限增长。
   ttl: 10m
+
+metrics:
+  enabled: true
+  path: /metrics

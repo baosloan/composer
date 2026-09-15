@@ -10,9 +10,10 @@ import (
 )
 
 type App struct {
-	cfg    *config.Config
-	logger *zap.Logger
-	server *http.Server
+	cfg       *config.Config
+	logger    *zap.Logger
+	container *Container
+	server    *http.Server
 }
 
 func New(ctx context.Context, configPath, version string) (*App, error) {
@@ -26,14 +27,25 @@ func New(ctx context.Context, configPath, version string) (*App, error) {
 		return nil, err
 	}
 
-	engine, err := NewEngine(cfg)
+	container, err := NewContainer(ctx, cfg, logger, version)
 	if err != nil {
+		// container 可能在失败前已经打开了一些连接；
+		// 释放它已成功构建的部分资源。
+		if container != nil {
+			_ = container.Close()
+		}
+		return nil, err
+	}
+	engine, err := NewEngine(container)
+	if err != nil {
+		_ = container.Close()
 		return nil, err
 	}
 
 	return &App{
-		cfg:    cfg,
-		logger: logger,
+		cfg:       cfg,
+		logger:    logger,
+		container: container,
 		server: &http.Server{
 			Addr:    cfg.Server.Addr(),
 			Handler: engine,

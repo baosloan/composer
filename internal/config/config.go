@@ -24,6 +24,7 @@ type Config struct {
 	Log       LogConfig       `mapstructure:"log"`
 	CORS      CORSConfig      `mapstructure:"cors"`
 	RateLimit RateLimitConfig `mapstructure:"rate_limit"`
+	Metrics   MetricsConfig   `mapstructure:"metrics"`
 }
 
 // AppConfig 用于保存应用的身份标识信息。
@@ -129,4 +130,10 @@ type RateLimitConfig struct {
 	Burst int     `mapstructure:"burst"`
 	// TTL 用于淘汰空闲的客户端令牌桶，防止内存无限增长。
 	TTL time.Duration `mapstructure:"ttl"`
+}
+
+// MetricsConfig 包含 Prometheus 指标暴露配置。
+type MetricsConfig struct {
+	Enabled bool   `mapstructure:"enabled"`
+	Path    string `mapstructure:"path"`
 }
